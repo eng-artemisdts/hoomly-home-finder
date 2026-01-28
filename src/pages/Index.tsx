@@ -3,6 +3,7 @@ import FiltersSidebar from "@/components/FiltersSidebar";
 import YourSearchesSection from "@/components/YourSearchesSection";
 import NewMatchesGrid from "@/components/NewMatchesGrid";
 import AIAssistantPanel from "@/components/AIAssistantPanel";
+import AISearchModal from "@/components/AISearchModal";
 
 const Index = () => {
   return (
@@ -29,6 +30,9 @@ const Index = () => {
         {/* Right Panel - AI Assistant */}
         <AIAssistantPanel />
       </div>
+
+      {/* AI Search Modal */}
+      <AISearchModal />
     </div>
   );
 };
