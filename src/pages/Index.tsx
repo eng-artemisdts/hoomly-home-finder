@@ -1,11 +1,33 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import TopNavigation from "@/components/TopNavigation";
+import FiltersSidebar from "@/components/FiltersSidebar";
+import YourSearchesSection from "@/components/YourSearchesSection";
+import NewMatchesGrid from "@/components/NewMatchesGrid";
+import AIAssistantPanel from "@/components/AIAssistantPanel";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Top Navigation */}
+      <TopNavigation />
+
+      {/* Main Layout */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Sidebar - Filters */}
+        <FiltersSidebar />
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-[1000px]">
+            {/* Your Searches */}
+            <YourSearchesSection />
+
+            {/* New Matches */}
+            <NewMatchesGrid />
+          </div>
+        </main>
+
+        {/* Right Panel - AI Assistant */}
+        <AIAssistantPanel />
       </div>
     </div>
   );
