@@ -38,16 +38,20 @@ const YourSearchesSection = () => {
         {savedSearches.map((search) => (
           <div
             key={search.id}
-            className="glass-card p-4 hover:border-primary/30 transition-all cursor-pointer group"
+            className="glass-card p-4 hover:border-primary/40 hover:shadow-md transition-all cursor-pointer group border border-border/70"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Search className="h-4 w-4 text-primary" />
                 </div>
-                <div>
+                <div className="space-y-0.5">
                   <h3 className="text-sm font-medium text-foreground">{search.name}</h3>
                   <p className="text-xs text-muted-foreground">{search.filters}</p>
+                  <div className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary text-[11px] px-2 py-0.5">
+                    <Star className="h-3 w-3" />
+                    <span>{search.matches} matches</span>
+                  </div>
                 </div>
               </div>
               <button className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-destructive/10 transition-all">
@@ -55,12 +59,8 @@ const YourSearchesSection = () => {
               </button>
             </div>
 
-            <div className="flex items-center justify-between text-xs">
-              <span className="flex items-center gap-1 text-primary font-medium">
-                <Star className="h-3.5 w-3.5" />
-                {search.matches} matches
-              </span>
-              <span className="flex items-center gap-1 text-muted-foreground">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
+              <span className="flex items-center gap-1">
                 <Clock className="h-3.5 w-3.5" />
                 {search.lastUpdate}
               </span>

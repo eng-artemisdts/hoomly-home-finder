@@ -1,0 +1,102 @@
+{
+    "actorSpecification": 1,
+    "fields": {
+        "url": "string",
+        "codigo": "string",
+        "title": "string",
+        "price": "string",
+        "condominio": "string",
+        "iptu": "string",
+        "location": "string",
+        "address": "string",
+        "neighborhood": "string",
+        "area": "number",
+        "bedrooms": "number",
+        "bathrooms": "number",
+        "description": "string",
+        "furnished": "boolean",
+        "petFriendly": "boolean",
+        "characteristics": "array",
+        "image": "string",
+        "source": "string"
+    },
+    "views": {
+        "overview": {
+            "title": "Overview",
+            "transformation": {
+                "fields": [
+                    "title",
+                    "price",
+                    "condominio",
+                    "iptu",
+                    "location",
+                    "neighborhood",
+                    "area",
+                    "bedrooms",
+                    "bathrooms",
+                    "furnished",
+                    "petFriendly",
+                    "url",
+                    "image"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "title": {
+                        "label": "Título",
+                        "format": "text"
+                    },
+                    "price": {
+                        "label": "Preço",
+                        "format": "text"
+                    },
+                    "condominio": {
+                        "label": "Condomínio",
+                        "format": "text"
+                    },
+                    "iptu": {
+                        "label": "IPTU",
+                        "format": "text"
+                    },
+                    "location": {
+                        "label": "Localização",
+                        "format": "text"
+                    },
+                    "neighborhood": {
+                        "label": "Bairro",
+                        "format": "text"
+                    },
+                    "area": {
+                        "label": "Área (m²)",
+                        "format": "text"
+                    },
+                    "bedrooms": {
+                        "label": "Quartos",
+                        "format": "text"
+                    },
+                    "bathrooms": {
+                        "label": "Banheiros",
+                        "format": "text"
+                    },
+                    "furnished": {
+                        "label": "Mobiliado",
+                        "format": "text"
+                    },
+                    "petFriendly": {
+                        "label": "Aceita pets",
+                        "format": "text"
+                    },
+                    "url": {
+                        "label": "URL",
+                        "format": "link"
+                    },
+                    "image": {
+                        "label": "Imagem",
+                        "format": "link"
+                    }
+                }
+            }
+        }
+    }
+}
