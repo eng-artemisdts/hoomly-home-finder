@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Filter, Home, Bed, Bath, Dog, Sofa } from "lucide-react";
 import TopNavigation from "@/components/TopNavigation";
@@ -115,11 +115,11 @@ function ApartmentCardSkeleton() {
 }
 
 const AllMatchesPage = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<FiltersState>(defaultFilters);
 
-  const { cardList, apartmentList, totalCount } = useMatchesCards();
+  const { cardList, apartmentList, totalCount, isLoading, error } =
+    useMatchesCards();
 
   const { cardList: filteredCardList, apartmentList: filteredApartmentList } =
     useMemo(
@@ -131,11 +131,6 @@ const AllMatchesPage = () => {
     () => countActiveFilters(filters),
     [filters]
   );
-
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 400);
-    return () => clearTimeout(t);
-  }, []);
 
   const handleClearFilters = () => {
     setFilters(defaultFilters);
@@ -322,7 +317,25 @@ const AllMatchesPage = () => {
           </div>
 
           {/* Grid */}
-          {isLoading ? (
+          {error ? (
+            <div
+              className="rounded-xl border border-dashed border-border bg-muted/30 p-12 text-center animate-fade-in"
+              style={{ animationDuration: "0.3s" }}
+            >
+              <p className="text-destructive mb-2">
+                Não foi possível carregar os imóveis.
+              </p>
+              <p className="text-sm text-muted-foreground mb-4">
+                {error.message}
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => window.location.reload()}
+              >
+                Tentar novamente
+              </Button>
+            </div>
+          ) : isLoading ? (
             <div
               className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 animate-fade-in"
               style={{ animationDuration: "0.25s" }}

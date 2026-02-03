@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { getApartmentsCollection } from "@/lib/mongodb";
 
+/**
+ * GET /api/apartments
+ * Returns all documents from the MongoDB "apartments" collection (database: hoomly).
+ * Requires MONGODB_URI in .env or .env.local.
+ */
 export async function GET() {
   try {
     const collection = await getApartmentsCollection();

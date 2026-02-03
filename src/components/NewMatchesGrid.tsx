@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
 import ApartmentCard from "./ApartmentCard";
 import { getCodigoFromUrl } from "@/data/apartments";
 import { useMatchesCards, PREVIEW_LIMIT } from "@/hooks/useMatchesCards";
-import { useNewMatchesGridStore } from "@/stores/newMatchesGridStore";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /** Skeleton que imita o layout do ApartmentCard para estado de carregamento. */
@@ -43,15 +41,8 @@ function ApartmentCardSkeleton() {
 }
 
 const NewMatchesGrid = () => {
-  const { isLoading, finishLoading } = useNewMatchesGridStore();
-  const { cardList, apartmentList, totalCount } = useMatchesCards({
-    limit: PREVIEW_LIMIT,
-  });
-
-  useEffect(() => {
-    const t = setTimeout(finishLoading, 600);
-    return () => clearTimeout(t);
-  }, [finishLoading]);
+  const { cardList, apartmentList, totalCount, isLoading, error } =
+    useMatchesCards({ limit: PREVIEW_LIMIT });
 
   return (
     <section className="animate-fade-in">
@@ -73,7 +64,11 @@ const NewMatchesGrid = () => {
         </Link>
       </div>
 
-      {isLoading ? (
+      {error ? (
+        <p className="text-sm text-destructive py-4">
+          Não foi possível carregar os imóveis. Tente novamente.
+        </p>
+      ) : isLoading ? (
         <div
           className="space-y-4 animate-fade-in"
           style={{ animationDuration: "0.25s" }}

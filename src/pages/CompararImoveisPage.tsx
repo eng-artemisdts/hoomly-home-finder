@@ -12,14 +12,17 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { apartments, type ApartmentFromJson } from "@/data/apartments";
+import { useMatchesCards } from "@/hooks/useMatchesCards";
+import type { ApartmentFromJson } from "@/data/apartments";
 import { ArrowLeft, BarChart3, Scale } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MAX_SELECT = 4;
+const LIST_PREVIEW = 12;
 
 const CompararImoveisPage = () => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const { apartmentList, isLoading, error } = useMatchesCards();
 
   const toggle = (url: string) => {
     setSelected((prev) => {
@@ -30,7 +33,8 @@ const CompararImoveisPage = () => {
     });
   };
 
-  const selectedList = apartments.filter((a) => selected.has(a.url));
+  const selectedList = apartmentList.filter((a) => selected.has(a.url));
+  const listPreview = apartmentList.slice(0, LIST_PREVIEW);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -55,81 +59,102 @@ const CompararImoveisPage = () => {
             </div>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            {/* Lista para seleção */}
+          {error ? (
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Selecionar imóveis</CardTitle>
-                <CardDescription>
-                  Marque os imóveis que deseja comparar ({selected.size}/
-                  {MAX_SELECT}).
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 max-h-[400px] overflow-y-auto">
-                  {apartments.slice(0, 12).map((apt) => (
-                    <li key={apt.url}>
-                      <label
-                        className={cn(
-                          "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors",
-                          selected.has(apt.url)
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:bg-secondary/50"
-                        )}
-                      >
-                        <Checkbox
-                          checked={selected.has(apt.url)}
-                          onCheckedChange={() => toggle(apt.url)}
-                          disabled={
-                            !selected.has(apt.url) &&
-                            selected.size >= MAX_SELECT
-                          }
-                          className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium truncate">
-                            {apt.title}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {apt.location} · R${" "}
-                            {apt.price.toLocaleString("pt-BR")}/mês
-                          </p>
-                        </div>
-                      </label>
-                    </li>
-                  ))}
-                </ul>
+              <CardContent className="pt-6">
+                <p className="text-destructive mb-2">
+                  Não foi possível carregar os imóveis.
+                </p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {error.message}
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.reload()}
+                >
+                  Tentar novamente
+                </Button>
               </CardContent>
             </Card>
+          ) : isLoading ? (
+            <p className="text-muted-foreground">Carregando imóveis...</p>
+          ) : (
+            <div className="grid gap-6 lg:grid-cols-2">
+              {/* Lista para seleção */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Selecionar imóveis</CardTitle>
+                  <CardDescription>
+                    Marque os imóveis que deseja comparar ({selected.size}/
+                    {MAX_SELECT}).
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3 max-h-[400px] overflow-y-auto">
+                    {listPreview.map((apt) => (
+                      <li key={apt.url}>
+                        <label
+                          className={cn(
+                            "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors",
+                            selected.has(apt.url)
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:bg-secondary/50"
+                          )}
+                        >
+                          <Checkbox
+                            checked={selected.has(apt.url)}
+                            onCheckedChange={() => toggle(apt.url)}
+                            disabled={
+                              !selected.has(apt.url) &&
+                              selected.size >= MAX_SELECT
+                            }
+                            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium truncate">
+                              {apt.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {apt.location} · R${" "}
+                              {apt.price.toLocaleString("pt-BR")}/mês
+                            </p>
+                          </div>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
 
-            {/* Área de comparação */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Scale className="h-5 w-5 text-primary" />
-                  Comparação
-                </CardTitle>
-                <CardDescription>
-                  {selectedList.length === 0
-                    ? "Selecione pelo menos 2 imóveis para ver a comparação."
-                    : `Comparando ${selectedList.length} imóvel(is).`}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {selectedList.length < 2 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
-                    <Scale className="h-12 w-12 mb-3 opacity-50" />
-                    <p className="text-sm">
-                      Selecione 2 a {MAX_SELECT} imóveis na lista ao lado para
-                      comparar preço, área, quartos e outros critérios.
-                    </p>
-                  </div>
-                ) : (
-                  <ComparisonTable items={selectedList} />
-                )}
-              </CardContent>
-            </Card>
-          </div>
+              {/* Área de comparação */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Scale className="h-5 w-5 text-primary" />
+                    Comparação
+                  </CardTitle>
+                  <CardDescription>
+                    {selectedList.length === 0
+                      ? "Selecione pelo menos 2 imóveis para ver a comparação."
+                      : `Comparando ${selectedList.length} imóvel(is).`}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {selectedList.length < 2 ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+                      <Scale className="h-12 w-12 mb-3 opacity-50" />
+                      <p className="text-sm">
+                        Selecione 2 a {MAX_SELECT} imóveis na lista ao lado para
+                        comparar preço, área, quartos e outros critérios.
+                      </p>
+                    </div>
+                  ) : (
+                    <ComparisonTable items={selectedList} />
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </main>
     </div>

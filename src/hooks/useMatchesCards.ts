@@ -1,10 +1,12 @@
-import { apartments, getNeighborhoodFromItem } from "@/data/apartments";
+import { useQuery } from "@tanstack/react-query";
+import { getNeighborhoodFromItem } from "@/data/apartments";
 import {
   getCoordsForNeighborhood,
   estimateCommuteMinutes,
 } from "@/lib/geo";
 import { useUserLocation } from "@/hooks/useUserLocation";
 import { useNeighborhoodCoords } from "@/hooks/useNeighborhoodCoords";
+import { fetchApartments } from "@/services/apartmentsService";
 import type { ApartmentFromJson } from "@/data/apartments";
 
 /** Extrai quartos do título (ex.: "1 quarto" -> 1). */
@@ -65,18 +67,26 @@ function mapApartmentToCardProps(
 
 export const PREVIEW_LIMIT = 6;
 
+const APARTMENTS_QUERY_KEY = ["apartments"] as const;
+
 interface UseMatchesCardsOptions {
   /** Se definido, retorna apenas os primeiros N itens (ex.: preview no dashboard). */
   limit?: number;
 }
 
 /**
- * Hook que mapeia a lista de apartamentos para as props dos cards,
+ * Hook que busca apartamentos da API e mapeia para as props dos cards,
  * usando localização do usuário e coordenadas dos bairros.
  */
 export function useMatchesCards(options: UseMatchesCardsOptions = {}) {
   const { limit } = options;
   const { coords: userCoords } = useUserLocation();
+
+  const { data: apartments = [], isLoading, error } = useQuery({
+    queryKey: APARTMENTS_QUERY_KEY,
+    queryFn: fetchApartments,
+  });
+
   const uniqueNeighborhoods = Array.from(
     new Set(
       apartments.map((apt) => getNeighborhoodFromItem(apt.title, apt.location))
@@ -88,17 +98,15 @@ export function useMatchesCards(options: UseMatchesCardsOptions = {}) {
     mapApartmentToCardProps(apt, index, userCoords, neighborhoodCoords)
   );
 
-  const apartmentList = limit
-    ? apartments.slice(0, limit)
-    : apartments;
-  const cardList = limit
-    ? fullCardList.slice(0, limit)
-    : fullCardList;
+  const apartmentList = limit ? apartments.slice(0, limit) : apartments;
+  const cardList = limit ? fullCardList.slice(0, limit) : fullCardList;
   const totalCount = apartments.length;
 
   return {
     cardList,
     apartmentList,
     totalCount,
+    isLoading,
+    error: error instanceof Error ? error : null,
   };
 }
