@@ -17,8 +17,8 @@ const Index = () => {
         <FiltersSidebar />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-[1000px]">
+        <main className="flex-1 min-w-0 overflow-y-auto p-6 flex justify-center">
+          <div className="w-full max-w-[1000px] xl:max-w-[1200px] 2xl:max-w-[1400px]">
             {/* Your Searches */}
             <YourSearchesSection />
 

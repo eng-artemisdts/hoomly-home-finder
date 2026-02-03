@@ -1,92 +1,97 @@
-import ApartmentCard from "./ApartmentCard";
-import apartment1 from "@/assets/apartment-1.jpg";
-import apartment2 from "@/assets/apartment-2.jpg";
-import apartment3 from "@/assets/apartment-3.jpg";
-import apartment4 from "@/assets/apartment-4.jpg";
-import apartment5 from "@/assets/apartment-5.jpg";
-import apartment6 from "@/assets/apartment-6.jpg";
+"use client";
 
-const apartments = [
-  {
-    image: apartment1,
-    price: "R$ 3.200",
-    address: "Rua Harmonia, 245",
-    neighborhood: "Pinheiros, São Paulo",
-    bedrooms: 2,
-    bathrooms: 1,
-    area: 68,
-    isNew: true,
-  },
-  {
-    image: apartment2,
-    price: "R$ 2.800",
-    address: "Rua Girassol, 180",
-    neighborhood: "Vila Madalena, São Paulo",
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 45,
-    isNew: true,
-  },
-  {
-    image: apartment3,
-    price: "R$ 4.500",
-    address: "Rua Oscar Freire, 1200",
-    neighborhood: "Jardins, São Paulo",
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 95,
-    isNew: false,
-  },
-  {
-    image: apartment4,
-    price: "R$ 3.800",
-    address: "Alameda Santos, 456",
-    neighborhood: "Jardins, São Paulo",
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 75,
-    isNew: true,
-  },
-  {
-    image: apartment5,
-    price: "R$ 2.500",
-    address: "Rua Wisard, 320",
-    neighborhood: "Vila Madalena, São Paulo",
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 52,
-    isNew: false,
-  },
-  {
-    image: apartment6,
-    price: "R$ 4.200",
-    address: "Rua dos Pinheiros, 890",
-    neighborhood: "Pinheiros, São Paulo",
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 82,
-    isNew: false,
-  },
-];
+import Link from "next/link";
+import ApartmentCard from "./ApartmentCard";
+import { getCodigoFromUrl } from "@/data/apartments";
+import { useMatchesCards, PREVIEW_LIMIT } from "@/hooks/useMatchesCards";
+import { Skeleton } from "@/components/ui/skeleton";
+
+/** Skeleton que imita o layout do ApartmentCard para estado de carregamento. */
+function ApartmentCardSkeleton() {
+  return (
+    <div className="rounded-xl border border-border/70 bg-card/80 p-4 md:p-5 flex flex-col md:flex-row md:items-stretch gap-4">
+      <div className="relative w-full md:w-64 overflow-hidden rounded-lg aspect-[4/3]">
+        <Skeleton className="absolute inset-0 w-full h-full" />
+      </div>
+      <div className="space-y-3 flex-1 flex flex-col min-w-0">
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-24" />
+          <Skeleton className="h-3 w-16" />
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <Skeleton className="h-6 w-14 rounded-full" />
+          <Skeleton className="h-6 w-14 rounded-full" />
+          <Skeleton className="h-6 w-12 rounded-full" />
+          <Skeleton className="h-6 w-20 rounded-full" />
+        </div>
+        <div className="flex items-start gap-1.5 mt-2">
+          <Skeleton className="h-4 w-4 shrink-0 rounded" />
+          <div className="space-y-1 flex-1 min-w-0">
+            <Skeleton className="h-4 w-full max-w-[200px]" />
+            <Skeleton className="h-3 w-28" />
+          </div>
+        </div>
+        <div className="mt-auto space-y-2 pt-2">
+          <Skeleton className="h-10 w-full rounded-md" />
+          <Skeleton className="h-9 w-full rounded-md" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const NewMatchesGrid = () => {
+  const { cardList, apartmentList, totalCount, isLoading, error } =
+    useMatchesCards({ limit: PREVIEW_LIMIT });
+
   return (
-    <section>
+    <section className="animate-fade-in">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Novos Matches</h2>
-          <p className="text-sm text-muted-foreground">12 novos imóveis encontrados</p>
+          <h2 className="text-lg font-semibold text-foreground">
+            Novos Matches
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {totalCount} novos imóveis encontrados
+          </p>
         </div>
-        <button className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+        <Link
+          href="/dashboard/imoveis"
+          className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+          aria-label="Ver todos os imóveis"
+        >
           Ver todos →
-        </button>
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {apartments.map((apt, index) => (
-          <ApartmentCard key={index} {...apt} />
-        ))}
-      </div>
+      {error ? (
+        <p className="text-sm text-destructive py-4">
+          Não foi possível carregar os imóveis. Tente novamente.
+        </p>
+      ) : isLoading ? (
+        <div
+          className="space-y-4 animate-fade-in"
+          style={{ animationDuration: "0.25s" }}
+        >
+          {Array.from({ length: PREVIEW_LIMIT }).map((_, i) => (
+            <ApartmentCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : (
+        <div
+          className="space-y-4 animate-fade-in"
+          style={{ animationDuration: "0.3s" }}
+        >
+          {cardList.map((apt, index) => (
+            <ApartmentCard
+              key={
+                getCodigoFromUrl(apartmentList[index].url) ?? `preview-${index}`
+              }
+              {...apt}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 };
