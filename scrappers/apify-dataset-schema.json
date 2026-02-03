@@ -4,9 +4,9 @@
         "url": "string",
         "codigo": "string",
         "title": "string",
-        "price": "string",
-        "condominio": "string",
-        "iptu": "string",
+        "price": "number",
+        "condominio": "number",
+        "iptu": "number",
         "location": "string",
         "address": "string",
         "neighborhood": "string",
@@ -18,7 +18,8 @@
         "petFriendly": "boolean",
         "characteristics": "array",
         "image": "string",
-        "source": "string"
+        "source": "string",
+        "origin": "string"
     },
     "views": {
         "overview": {
@@ -37,7 +38,8 @@
                     "furnished",
                     "petFriendly",
                     "url",
-                    "image"
+                    "image",
+                    "origin"
                 ]
             },
             "display": {
@@ -94,6 +96,10 @@
                     "image": {
                         "label": "Imagem",
                         "format": "link"
+                    },
+                    "origin": {
+                        "label": "Origem",
+                        "format": "text"
                     }
                 }
             }

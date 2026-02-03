@@ -1,9 +1,26 @@
 import { useState } from "react";
-import { Heart, Bed, Bath, Maximize, MapPin, Home, ExternalLink, Dog, Sofa, Clock } from "lucide-react";
+import {
+  Heart,
+  Bed,
+  Bath,
+  Maximize,
+  MapPin,
+  Home,
+  ExternalLink,
+  Dog,
+  Sofa,
+  Clock,
+} from "lucide-react";
 import placeholderImage from "@/assets/apartment-1.jpg";
+import { formatPriceBrl, cn } from "@/lib/utils";
 
 interface ApartmentCardProps {
-  price: string;
+  /** Aluguel em reais (número). Será formatado para exibição. */
+  price: number;
+  /** Condomínio em reais (opcional). Somado ao aluguel no total por mês. */
+  condominio?: number;
+  /** IPTU em reais (opcional). Somado ao aluguel no total por mês. */
+  iptu?: number;
   address: string;
   neighborhood: string;
   bedrooms: number;
@@ -16,10 +33,14 @@ interface ApartmentCardProps {
   commuteMinutes?: number;
   /** URL da imagem do imóvel (ex.: do Apify/Vitrini). Fallback para placeholder quando ausente. */
   image?: string;
+  /** Layout: default (horizontal em md+) ou compact (sempre vertical, para grid). */
+  layout?: "default" | "compact";
 }
 
 const ApartmentCard = ({
   price,
+  condominio,
+  iptu,
   address,
   neighborhood,
   bedrooms,
@@ -31,14 +52,33 @@ const ApartmentCard = ({
   furnished,
   commuteMinutes,
   image: imageUrl,
+  layout = "default",
 }: ApartmentCardProps) => {
   const [imageError, setImageError] = useState(false);
-  const imageSrc = imageUrl && !imageError ? imageUrl : placeholderImage;
+  const rawImageSrc = imageUrl && !imageError ? imageUrl : placeholderImage;
+  const imageSrc =
+    typeof rawImageSrc === "string"
+      ? rawImageSrc
+      : (rawImageSrc as { src: string }).src;
+  const totalPorMes = price + (condominio ?? 0) + (iptu ?? 0);
+  const temDetalhe =
+    (condominio != null && condominio > 0) || (iptu != null && iptu > 0);
+  const isCompact = layout === "compact";
 
   return (
-    <div className="apartment-card animate-fade-in rounded-xl border border-border/70 bg-card/80 backdrop-blur-sm p-4 md:p-5 flex flex-col md:flex-row md:items-stretch gap-4">
+    <div
+      className={cn(
+        "apartment-card animate-fade-in rounded-xl border border-border/70 bg-card/80 backdrop-blur-sm flex flex-col gap-4",
+        isCompact ? "p-3" : "p-4 md:p-5 md:flex-row md:items-stretch"
+      )}
+    >
       {/* Visual abstrata em vez de foto do anúncio */}
-      <div className="relative w-full md:w-64 overflow-hidden rounded-lg aspect-[4/3]">
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-lg aspect-[4/3]",
+          !isCompact && "w-full md:w-64"
+        )}
+      >
         {/* Imagem borrada de fundo */}
         <div className="absolute inset-0">
           <img
@@ -107,13 +147,64 @@ const ApartmentCard = ({
       </div>
 
       {/* Conteúdo */}
-      <div className="space-y-3 flex-1 flex flex-col">
+      <div
+        className={cn(
+          "space-y-3 flex-1 flex flex-col",
+          isCompact && "space-y-2"
+        )}
+      >
         {/* Preço */}
-        <div className="flex items-start justify-between">
+        <div className="space-y-2">
           <div>
-            <p className="text-lg font-semibold text-foreground">{price}</p>
-            <p className="text-xs text-muted-foreground">por mês</p>
+            <p
+              className={cn(
+                "font-bold text-foreground tabular-nums",
+                isCompact ? "text-lg" : "text-xl"
+              )}
+            >
+              {formatPriceBrl(totalPorMes)}
+            </p>
+            <p className="text-xs font-medium text-muted-foreground">
+              por mês{temDetalhe ? " (total)" : ""}
+            </p>
           </div>
+          {temDetalhe && !isCompact && (
+            <div className="rounded-lg border border-border/70 bg-muted/40 px-3 py-2 space-y-1.5">
+              <p className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground">
+                Detalhamento
+              </p>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                <span className="text-foreground">
+                  <span className="text-muted-foreground font-normal">
+                    Aluguel{" "}
+                  </span>
+                  <span className="font-semibold tabular-nums">
+                    {formatPriceBrl(price)}
+                  </span>
+                </span>
+                {condominio != null && condominio > 0 && (
+                  <span className="text-foreground">
+                    <span className="text-muted-foreground font-normal">
+                      Condomínio{" "}
+                    </span>
+                    <span className="font-semibold tabular-nums">
+                      {formatPriceBrl(condominio)}
+                    </span>
+                  </span>
+                )}
+                {iptu != null && iptu > 0 && (
+                  <span className="text-foreground">
+                    <span className="text-muted-foreground font-normal">
+                      IPTU{" "}
+                    </span>
+                    <span className="font-semibold tabular-nums">
+                      {formatPriceBrl(iptu)}
+                    </span>
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Endereço */}
@@ -126,8 +217,12 @@ const ApartmentCard = ({
         </div>
 
         {/* Ações */}
-        <div className="mt-auto space-y-2 pt-1">
-          <button className="btn-save w-full">
+        <div
+          className={cn("mt-auto space-y-2 pt-1", isCompact && "space-y-1.5")}
+        >
+          <button
+            className={cn("btn-save w-full", isCompact && "text-xs py-1.5")}
+          >
             <Heart className="h-4 w-4" />
             Salvar e acompanhar
           </button>
@@ -137,7 +232,10 @@ const ApartmentCard = ({
               href={officialUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-primary/70 text-primary text-xs sm:text-sm font-medium py-2 hover:bg-primary/10 transition-colors"
+              className={cn(
+                "w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-primary/70 text-primary font-medium hover:bg-primary/10 transition-colors",
+                isCompact ? "text-xs py-1.5" : "text-xs sm:text-sm py-2"
+              )}
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Ver anúncio no site oficial

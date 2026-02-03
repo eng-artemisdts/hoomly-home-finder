@@ -1,0 +1,32 @@
+{
+    "title": "Vitrini Scrapper",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "startUrls": {
+            "title": "Start URLs",
+            "type": "array",
+            "description": "URLs para iniciar o crawl. Se vazio, usa a listagem de imóveis para alugar da Vitrini (com página definida por 'pagina').",
+            "editor": "requestListSources",
+            "prefill": [
+                {
+                    "url": "https://imobiliariavitrini.com.br/buscar-imoveis/imoveis-para-alugar/?ordenacao=menor-preco&cidade="
+                }
+            ]
+        },
+        "pagina": {
+            "title": "Página",
+            "type": "integer",
+            "description": "Número da página da listagem a buscar (ex.: 1, 2, 3). Usado na URL como ?pagina=N. Só aplica quando startUrls não é informado.",
+            "default": 1,
+            "minimum": 1,
+            "unit": "página"
+        },
+        "maxRequestsPerCrawl": {
+            "title": "Max Requests per Crawl",
+            "type": "integer",
+            "description": "Número máximo de requisições que o crawler pode fazer.",
+            "default": 100
+        }
+    }
+}

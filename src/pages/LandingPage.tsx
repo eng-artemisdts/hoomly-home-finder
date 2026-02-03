@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Search, Bell, Sparkles, Shield, Clock, MapPin, Star, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
@@ -12,7 +13,7 @@ const LandingPage = () => {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <img src={logo} alt="Hoomly AI" className="h-8" />
+          <Image src={logo} alt="Hoomly AI" className="h-8 w-auto" width={120} height={32} />
           
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
@@ -27,12 +28,12 @@ const LandingPage = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link to="/login">
+            <Link href="/login">
               <Button variant="ghost" className="text-sm font-medium">
                 Entrar
               </Button>
             </Link>
-            <Link to="/login">
+            <Link href="/login">
               <Button className="text-sm font-medium bg-primary hover:bg-primary/90">
                 Começar Grátis
               </Button>
@@ -61,7 +62,7 @@ const LandingPage = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/login">
+                <Link href="/login">
                   <Button size="lg" className="w-full sm:w-auto text-base px-8 bg-primary hover:bg-primary/90">
                     Começar Busca Grátis
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -95,22 +96,28 @@ const LandingPage = () => {
             <div className="relative hidden lg:block">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <img
+                  <Image
                     src={apartment1}
                     alt="Apartamento moderno"
                     className="rounded-2xl shadow-card-hover w-full h-48 object-cover"
+                    width={400}
+                    height={192}
                   />
-                  <img
+                  <Image
                     src={apartment2}
                     alt="Quarto aconchegante"
                     className="rounded-2xl shadow-card-hover w-full h-64 object-cover"
+                    width={400}
+                    height={256}
                   />
                 </div>
                 <div className="pt-8 space-y-4">
-                  <img
+                  <Image
                     src={apartment3}
                     alt="Cozinha moderna"
                     className="rounded-2xl shadow-card-hover w-full h-64 object-cover"
+                    width={400}
+                    height={256}
                   />
                   <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-card">
                     <div className="flex items-center gap-3 mb-3">
@@ -285,7 +292,7 @@ const LandingPage = () => {
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               Comece sua busca gratuita agora e deixe a IA fazer o trabalho pesado por você
             </p>
-            <Link to="/login">
+            <Link href="/login">
               <Button size="lg" className="text-base px-10 bg-primary hover:bg-primary/90">
                 Criar Conta Grátis
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -310,7 +317,7 @@ const LandingPage = () => {
       <footer className="py-12 px-6 border-t border-border/50">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <img src={logo} alt="Hoomly AI" className="h-7" />
+            <Image src={logo} alt="Hoomly AI" className="h-7 w-auto" width={100} height={28} />
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-foreground transition-colors">Termos</a>
               <a href="#" className="hover:text-foreground transition-colors">Privacidade</a>

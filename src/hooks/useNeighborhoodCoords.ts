@@ -20,6 +20,7 @@ export function useNeighborhoodCoords(
         .filter((k) => k && k !== "Belo Horizonte")
     )
   );
+  const keysKey = uniqueKeys.join(",");
 
   useEffect(() => {
     if (uniqueKeys.length === 0) return;
@@ -37,7 +38,9 @@ export function useNeighborhoodCoords(
     return () => {
       cancelled = true;
     };
-  }, [uniqueKeys.join(",")]);
+  // keysKey is the stable serialized dependency; uniqueKeys is used inside the effect
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keysKey]);
 
   return coordsMap;
 }

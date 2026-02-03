@@ -6,14 +6,19 @@ import { CheerioCrawler, Dataset } from '@crawlee/cheerio';
 import { Actor } from 'apify';
 
 interface Input {
-    startUrls: {
+    startUrls?: {
         url: string;
         method?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'TRACE' | 'OPTIONS' | 'CONNECT' | 'PATCH';
         headers?: Record<string, string>;
         userData?: Record<string, unknown>;
     }[];
-    maxRequestsPerCrawl: number;
+    /** Página da listagem a buscar (ex.: 1, 2, 3). Usado na URL ?pagina=N. */
+    pagina?: number;
+    maxRequestsPerCrawl?: number;
 }
+
+/** Identificador da origem do anúncio (para persistência em base de dados). */
+const SCRAPER_ORIGIN = 'vitrini' as const;
 
 /** Código do imóvel (ex.: da URL ?codigo=43906). */
 function getCodigoFromUrl(url: string): string | null {
@@ -27,15 +32,14 @@ function parseNumber(value: string): number | null {
     return Number.isNaN(n) ? null : n;
 }
 
-/** Extrai valor em R$ de texto (ex.: "R$ 1.200,00" -> "R$ 1.200"). */
-function formatPriceBrl(raw: string): string {
+/** Converte texto em R$ para número (ex.: "R$ 1.200,00" -> 1200). */
+function parsePriceToNumber(raw: string): number | null {
     const match = /R\$\s*([\d.,]+)/i.exec(raw);
-    if (!match) return raw.trim();
+    if (!match) return null;
     const digits = match[1].replace(/\D/g, '');
-    if (digits.length === 0) return raw.trim();
-    const intPart = digits.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, '.') || '0';
-    const decPart = digits.slice(-2);
-    return `R$ ${intPart},${decPart}`;
+    if (digits.length === 0) return null;
+    const cents = parseInt(digits, 10);
+    return cents / 100;
 }
 
 /** Extrai dados do imóvel da página de detalhe (ex.: /imovel/?codigo=43906). */
@@ -74,15 +78,30 @@ function extractDetail($: any, requestUrl: string, log: { info: (msg: string, da
             .trim();
         if (strongR) priceRaw = strongR;
     }
-    const price = priceRaw ? formatPriceBrl(priceRaw) : $('*[class*="preco"], *[class*="valor"]').first().text().trim();
+    const priceRawResolved = priceRaw || $('*[class*="preco"], *[class*="valor"]').first().text().trim();
+    const price = priceRawResolved ? parsePriceToNumber(priceRawResolved) ?? undefined : undefined;
 
-    let condominio = '';
-    const condMatch = /Condomínio:\s*(R\$\s*[\d.,]+)/i.exec(allText);
-    if (condMatch) condominio = formatPriceBrl(condMatch[1]);
-
-    let iptu = '';
-    const iptuMatch = /IPTU:\s*(R\$\s*[\d.,]+)/i.exec(allText);
-    if (iptuMatch) iptu = formatPriceBrl(iptuMatch[1]);
+    let condominioRaw = '';
+    let iptuRaw = '';
+    // Extrai Condomínio e IPTU dos blocos .d-inline-block.txt-gray-default (ex.: "Condomínio: R$ 0,00" / "IPTU: R$ 90,00")
+    $('div.d-inline-block.txt-gray-default').each((_: number, el: unknown) => {
+        const text = $(el).text().trim();
+        const condMatch = /Condomínio:\s*(R\$\s*[\d.,]+)/i.exec(text);
+        if (condMatch) condominioRaw = condMatch[1];
+        const iptuMatch = /IPTU:\s*(R\$\s*[\d.,]+)/i.exec(text);
+        if (iptuMatch) iptuRaw = iptuMatch[1];
+    });
+    // Fallback: regex no texto da página
+    if (!condominioRaw) {
+        const condMatch = /Condomínio:\s*(R\$\s*[\d.,]+)/i.exec(allText);
+        if (condMatch) condominioRaw = condMatch[1];
+    }
+    if (!iptuRaw) {
+        const iptuMatch = /IPTU:\s*(R\$\s*[\d.,]+)/i.exec(allText);
+        if (iptuMatch) iptuRaw = iptuMatch[1];
+    }
+    const condominio = condominioRaw ? parsePriceToNumber(condominioRaw) ?? undefined : undefined;
+    const iptu = iptuRaw ? parsePriceToNumber(iptuRaw) ?? undefined : undefined;
 
     let area: number | null = null;
     let bedrooms: number | null = null;
@@ -175,8 +194,8 @@ function extractDetail($: any, requestUrl: string, log: { info: (msg: string, da
         codigo: codigo || undefined,
         title,
         price,
-        condominio: condominio || undefined,
-        iptu: iptu || undefined,
+        condominio,
+        iptu,
         location,
         address: location,
         neighborhood: location.split(',')[0]?.trim() || location,
@@ -189,6 +208,7 @@ function extractDetail($: any, requestUrl: string, log: { info: (msg: string, da
         characteristics: characteristics.length ? characteristics : undefined,
         image,
         source: 'vitrini' as const,
+        origin: SCRAPER_ORIGIN,
     };
 
     log.info('Dados extraídos do imóvel', {
@@ -213,14 +233,19 @@ Actor.on('aborting', async () => {
     await Actor.exit();
 });
 
-const {
-    startUrls = [
-        {
-            url: 'https://imobiliariavitrini.com.br/buscar-imoveis/imoveis-para-alugar/?ordenacao=menor-preco&cidade=',
-        },
-    ],
-    maxRequestsPerCrawl = 100,
-} = (await Actor.getInput<Input>()) ?? ({} as Input);
+const input = (await Actor.getInput<Input>()) ?? ({} as Input);
+const { maxRequestsPerCrawl = 100, pagina } = input;
+
+const baseListingUrl = 'https://imobiliariavitrini.com.br/buscar-imoveis/imoveis-para-alugar/';
+const defaultListingUrl =
+    baseListingUrl +
+    '?ordenacao=menor-preco&cidade=' +
+    (pagina != null && pagina >= 1 ? `&pagina=${pagina}` : '');
+
+const startUrls =
+    (input.startUrls?.length ?? 0) > 0
+        ? input.startUrls
+        : [{ url: defaultListingUrl }];
 
 const proxyConfiguration = await Actor.createProxyConfiguration({ checkAccess: true });
 

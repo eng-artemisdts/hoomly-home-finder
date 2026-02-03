@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { MessageSquare, X, Sparkles } from "lucide-react";
 import AISearchChat from "./AISearchChat";

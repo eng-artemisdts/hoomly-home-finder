@@ -1,4 +1,11 @@
+import Link from "next/link";
 import { Sparkles, RefreshCw, Bell, BarChart3 } from "lucide-react";
+
+const QUICK_ACTIONS = [
+  { to: "/dashboard/refinar-busca", icon: RefreshCw, label: "Refinar Busca" },
+  { to: "/dashboard/alertas", icon: Bell, label: "Configurar Alerta" },
+  { to: "/dashboard/comparar", icon: BarChart3, label: "Comparar Imóveis" },
+] as const;
 
 const AIAssistantPanel = () => {
   return (
@@ -9,8 +16,12 @@ const AIAssistantPanel = () => {
           <Sparkles className="h-5 w-5 text-primary" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Assistente AI</h2>
-          <p className="text-xs text-muted-foreground">Sempre buscando para você</p>
+          <h2 className="text-sm font-semibold text-foreground">
+            Assistente AI
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Sempre buscando para você
+          </p>
         </div>
       </div>
 
@@ -22,20 +33,29 @@ const AIAssistantPanel = () => {
           </div>
           <div className="space-y-2">
             <p className="text-sm text-foreground leading-relaxed">
-              Encontrei <span className="font-semibold text-primary">12 novos imóveis</span> desde ontem que combinam com seus critérios.
+              Encontrei{" "}
+              <span className="font-semibold text-primary">
+                12 novos imóveis
+              </span>{" "}
+              desde ontem que combinam com seus critérios.
             </p>
             <p className="text-sm text-foreground leading-relaxed">
-              3 deles estão em <span className="font-medium">Pinheiros</span> com ótimo custo-benefício.
+              3 deles estão em <span className="font-medium">Pinheiros</span>{" "}
+              com ótimo custo-benefício.
             </p>
           </div>
         </div>
       </div>
 
       {/* Insights */}
-      <div className="ai-panel mb-5 bg-teal-light animate-fade-in" style={{ animationDelay: "0.1s" }}>
+      <div
+        className="ai-panel mb-5 bg-teal-light animate-fade-in"
+        style={{ animationDelay: "0.1s" }}
+      >
         <p className="text-xs font-medium text-primary mb-2">💡 Insight</p>
         <p className="text-sm text-foreground leading-relaxed">
-          Os preços em Pinheiros caíram 8% nas últimas 2 semanas. Ótimo momento para negociar!
+          Os preços em Pinheiros caíram 8% nas últimas 2 semanas. Ótimo momento
+          para negociar!
         </p>
       </div>
 
@@ -45,18 +65,16 @@ const AIAssistantPanel = () => {
           Ações Rápidas
         </p>
         <div className="space-y-2">
-          <button className="quick-action w-full justify-start gap-2.5">
-            <RefreshCw className="h-4 w-4 text-primary" />
-            Refinar Busca
-          </button>
-          <button className="quick-action w-full justify-start gap-2.5">
-            <Bell className="h-4 w-4 text-primary" />
-            Configurar Alerta
-          </button>
-          <button className="quick-action w-full justify-start gap-2.5">
-            <BarChart3 className="h-4 w-4 text-primary" />
-            Comparar Imóveis
-          </button>
+          {QUICK_ACTIONS.map(({ to, icon: Icon, label }) => (
+            <Link
+              key={to}
+              href={to}
+              className="quick-action w-full justify-start gap-2.5"
+            >
+              <Icon className="h-4 w-4 text-primary shrink-0" />
+              {label}
+            </Link>
+          ))}
         </div>
       </div>
 
@@ -67,16 +85,30 @@ const AIAssistantPanel = () => {
         </p>
         <div className="space-y-3">
           {[
-            { action: "Imóvel salvo", detail: "Rua Harmonia, 245", time: "2h atrás" },
-            { action: "Alerta criado", detail: "Vila Madalena", time: "5h atrás" },
-            { action: "Busca atualizada", detail: "Filtro de preço", time: "1 dia" },
+            {
+              action: "Imóvel salvo",
+              detail: "Rua Harmonia, 245",
+              time: "2h atrás",
+            },
+            {
+              action: "Alerta criado",
+              detail: "Vila Madalena",
+              time: "5h atrás",
+            },
+            {
+              action: "Busca atualizada",
+              detail: "Filtro de preço",
+              time: "1 dia",
+            },
           ].map((item, i) => (
             <div key={i} className="flex items-start justify-between gap-2">
               <div>
                 <p className="text-sm text-foreground">{item.action}</p>
                 <p className="text-xs text-muted-foreground">{item.detail}</p>
               </div>
-              <span className="text-xs text-muted-foreground whitespace-nowrap">{item.time}</span>
+              <span className="text-xs text-muted-foreground whitespace-nowrap">
+                {item.time}
+              </span>
             </div>
           ))}
         </div>

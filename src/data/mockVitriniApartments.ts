@@ -6,9 +6,9 @@ export interface VitriniApartment {
   url: string;
   codigo?: string;
   title: string;
-  price: string;
-  condominio?: string;
-  iptu?: string;
+  price: number;
+  condominio?: number;
+  iptu?: number;
   location: string;
   address: string;
   neighborhood: string;
@@ -28,9 +28,9 @@ export const mockVitriniApartments: VitriniApartment[] = [
     url: "https://imobiliariavitrini.com.br/imovel/?codigo=43906",
     codigo: "43906",
     title: "Apartamento 2 quartos - Funcionários",
-    price: "R$ 2.400,00",
-    condominio: "R$ 450,00",
-    iptu: "R$ 120,00",
+    price: 2400,
+    condominio: 450,
+    iptu: 120,
     location: "Funcionários, Belo Horizonte",
     address: "Rua da Bahia, 1148 - Funcionários",
     neighborhood: "Funcionários",
@@ -48,9 +48,9 @@ export const mockVitriniApartments: VitriniApartment[] = [
     url: "https://imobiliariavitrini.com.br/imovel/?codigo=44102",
     codigo: "44102",
     title: "Apartamento 3 quartos - Savassi",
-    price: "R$ 3.800,00",
-    condominio: "R$ 620,00",
-    iptu: "R$ 180,00",
+    price: 3800,
+    condominio: 620,
+    iptu: 180,
     location: "Savassi, Belo Horizonte",
     address: "Rua Pernambuco, 892 - Savassi",
     neighborhood: "Savassi",
@@ -68,8 +68,8 @@ export const mockVitriniApartments: VitriniApartment[] = [
     url: "https://imobiliariavitrini.com.br/imovel/?codigo=43821",
     codigo: "43821",
     title: "Apartamento 1 quarto - Lourdes",
-    price: "R$ 1.950,00",
-    condominio: "R$ 380,00",
+    price: 1950,
+    condominio: 380,
     location: "Lourdes, Belo Horizonte",
     address: "Rua da Paisagem, 340 - Lourdes",
     neighborhood: "Lourdes",
@@ -85,9 +85,9 @@ export const mockVitriniApartments: VitriniApartment[] = [
     url: "https://imobiliariavitrini.com.br/imovel/?codigo=44215",
     codigo: "44215",
     title: "Apartamento 2 quartos - Pampulha",
-    price: "R$ 2.650,00",
-    condominio: "R$ 410,00",
-    iptu: "R$ 95,00",
+    price: 2650,
+    condominio: 410,
+    iptu: 95,
     location: "Pampulha, Belo Horizonte",
     address: "Av. Portugal, 2250 - Pampulha",
     neighborhood: "Pampulha",
@@ -105,8 +105,8 @@ export const mockVitriniApartments: VitriniApartment[] = [
     url: "https://imobiliariavitrini.com.br/imovel/?codigo=44033",
     codigo: "44033",
     title: "Apartamento 2 quartos - Santo Agostinho",
-    price: "R$ 3.100,00",
-    condominio: "R$ 520,00",
+    price: 3100,
+    condominio: 520,
     location: "Santo Agostinho, Belo Horizonte",
     address: "Rua Aimorés, 1456 - Santo Agostinho",
     neighborhood: "Santo Agostinho",
@@ -122,9 +122,9 @@ export const mockVitriniApartments: VitriniApartment[] = [
     url: "https://imobiliariavitrini.com.br/imovel/?codigo=43987",
     codigo: "43987",
     title: "Apartamento 3 quartos - Cidade Jardim",
-    price: "R$ 4.200,00",
-    condominio: "R$ 750,00",
-    iptu: "R$ 220,00",
+    price: 4200,
+    condominio: 750,
+    iptu: 220,
     location: "Cidade Jardim, Belo Horizonte",
     address: "Rua dos Inconfidentes, 1070 - Cidade Jardim",
     neighborhood: "Cidade Jardim",

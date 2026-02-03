@@ -5,10 +5,22 @@ import apartmentsJson from "./apartments.json";
 
 export interface ApartmentFromJson {
   title: string;
-  price: string;
+  /** Aluguel em reais (número). */
+  price: number;
   location: string;
   url: string;
-  image: string;
+  image?: string;
+  /** Área em m² (saída Apify/Vitrini). */
+  area?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  neighborhood?: string;
+  /** Condomínio em reais (número). */
+  condominio?: number;
+  /** IPTU em reais (número). */
+  iptu?: number;
+  furnished?: boolean;
+  petFriendly?: boolean;
 }
 
 export const apartments = apartmentsJson as ApartmentFromJson[];
