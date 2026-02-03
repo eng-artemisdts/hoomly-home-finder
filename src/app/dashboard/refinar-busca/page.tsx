@@ -1,4 +1,4 @@
-import RefinarBuscaPage from "@/pages/RefinarBuscaPage";
+import RefinarBuscaPage from "@/views/RefinarBuscaPage";
 
 export default function RefinarBusca() {
   return <RefinarBuscaPage />;

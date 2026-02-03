@@ -1,4 +1,4 @@
-import AlertsPage from "@/pages/AlertsPage";
+import AlertsPage from "@/views/AlertsPage";
 
 export default function NovoAlerta() {
   return <AlertsPage />;
